@@ -32,24 +32,18 @@ class Hand:
         return True if self.sum() > 21 else False
 
 class Game:
-    def __init__(self, starting_cash):
-        self.cash = starting_cash
+    def __init__(self):
+        self.deal()
 
     def deal(self):
         # d is dealer, p is player
         self.p = Hand()
-        self.d = Hand()
+        ####self.d = Hand()
+        # This is the face up card that the player can see.
+        ####self.dealer_card = self.d.hand[0]
         return
 
-    def d_turn(self):
-        # Dealer must stand on 17
-        while self.d.sum() < 17:
-            print('Dealer:', self.d.hand, self.d.sum(), 'hit')
-            self.d.deal()
-        print('Dealer:', self.d.hand, self.d.sum())
-        return
-
-    def p_turn(self, decision):
+    def turn(self, decision):
         # TODO eventually switch this to binary/numbered idk
         # TODO deal with blackjacks
         if decision == 's':
@@ -62,8 +56,8 @@ class Game:
                 return False
 
     def payout(self):
-        p = game.p.sum()
-        d = game.d.sum()
+        p = self.p.sum()
+        d = self.d.sum()
 
         # Bet multiplied by this amount
 
@@ -83,18 +77,32 @@ class Game:
         elif p == d:
             return 0
 
+INFO = []
+def play(game):
+    game.deal()
+    # print(f'You: {game.p.hand}\nDealer: {["?", game.d.hand[1]]}\n')
 
-game = Game(500)
-game.deal()
-print(f'You: {game.p.hand}\nDealer: {["?", game.d.hand[1]]}\n')
+    while True:
+        dec = np.random.choice(('h', 's'))
+        x = game.p.sum()
+        a = game.turn(dec)
+        INFO.append((x, dec))
 
-x = False
-while not x:
-    dec = input('Decision: ')
-    x = game.p_turn(dec)
-    print('You:', game.p.hand, game.p.sum(), '\n') 
-game.d_turn()
-print(game.payout())
+        if a:
+            break
+    # print(game.p.hand, game.p.sum())
 
+    # while game.d.sum() < 17:
+    #     # print(game.d.hand, game.d.sum())
+    #     game.d.deal()
+    # print(game.d.hand, game.d.sum())
 
+    # x.append(game.payout())
+    return
+
+if __name__ == "__main__":
+    game = Game()
+    for i in range(100000):
+        play(game)
+    [print(i) for i in INFO]
 
